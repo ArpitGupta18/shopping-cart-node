@@ -1,7 +1,8 @@
 import { JWT_SECRET } from "../config/env.js";
 import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
-export const requireAuth = (req, res, next) => {
+export const requireAuth = async (req, res, next) => {
 	const authHeader = req.headers.authorization;
 	if (!authHeader || !authHeader.startsWith("Bearer ")) {
 		return res.status(401).json({ error: "Unauthorized, token missing" });
@@ -11,7 +12,10 @@ export const requireAuth = (req, res, next) => {
 
 	try {
 		const decoded = jwt.verify(token, JWT_SECRET);
-		req.user = decoded;
+		const user = await User.findByPk(decoded.id, {
+			attributes: ["id", "name", "email", "role", "isVerified"],
+		});
+		req.user = user;
 		next();
 	} catch (err) {
 		return res.status(401).json({ error: "Unauthorized, token invalid" });

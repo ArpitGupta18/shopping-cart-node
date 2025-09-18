@@ -4,6 +4,7 @@ import cors from "cors";
 import morgan from "morgan";
 import swaggerUI from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
+import cookieParser from "cookie-parser";
 
 import healthRoutes from "./routes/health.routes.js";
 import authRoutes from "./routes/auth.routes.js";
@@ -14,8 +15,14 @@ import seedRoutes from "./routes/seed.routes.js";
 const app = express();
 
 app.use(helmet());
-app.use(cors());
+app.use(
+	cors({
+		origin: "http://localhost:5173",
+		credentials: true,
+	})
+);
 app.use(morgan("dev"));
+app.use(cookieParser());
 app.use(express.json());
 
 const swaggerOptions = {

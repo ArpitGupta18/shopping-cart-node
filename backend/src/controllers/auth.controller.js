@@ -97,6 +97,13 @@ const login = async (req, res) => {
 		user.refreshToken = refreshToken;
 		await user.save();
 
+		res.cookie("refreshToken", refreshToken, {
+			httpOnly: true,
+			secure: false,
+			sameSite: "lax",
+			maxAge: 7 * 24 * 60 * 60 * 1000,
+		});
+
 		res.json({ accessToken, refreshToken });
 	} catch (err) {
 		res.status(500).json({ error: err.message });
@@ -129,7 +136,9 @@ const refreshToken = async (req, res) => {
 
 const logout = async (req, res) => {
 	try {
-		const { refreshToken } = req.body;
+		const refreshToken = req.cookies.refreshToken;
+
+		console.log("Logout refresh token:", refreshToken);
 		if (!refreshToken) {
 			return res.status(401).json({ error: "Refresh token required" });
 		}
@@ -143,6 +152,11 @@ const logout = async (req, res) => {
 		user.refreshToken = null;
 		await user.save();
 
+		res.clearCookie("refreshToken", {
+			httpOnly: true,
+			secure: false,
+			sameSite: "lax",
+		});
 		res.json({ message: "Logged out successfully" });
 	} catch (error) {
 		res.status(500).json({ error: error.message });

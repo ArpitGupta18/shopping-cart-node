@@ -4,7 +4,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /protected:
+ * /me:
  *   get:
  *     summary: Example protected route (user)
  *     security:
@@ -13,7 +13,7 @@ const router = express.Router();
  *       200:
  *         description: Success
  */
-router.get("/protected", requireAuth, (req, res) => {
+router.get("/me", requireAuth, (req, res) => {
 	res.json({ message: "You are authenticated!", user: req.user });
 });
 

@@ -92,16 +92,6 @@ router.post("/refresh", auth.refreshToken);
  *   summary: Logout a user
  *   description: Logout a user by invalidating the refresh token.
  *   tags: [Auth]
- *   requestBody:
- *     required: true
- *     content:
- *       application/json:
- *         schema:
- *           type: object
- *           required: [refreshToken]
- *           properties:
- *             refreshToken:
- *               type: string
  *   responses:
  *       200:
  *         description: Logged out successfully
