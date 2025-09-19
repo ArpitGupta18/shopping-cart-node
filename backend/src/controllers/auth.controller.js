@@ -223,7 +223,7 @@ const forgotPassword = async (req, res) => {
 
 		await user.save();
 
-		const resetUrl = `${resetToken}`;
+		const resetUrl = `http://localhost:5173/auth/reset-password/${resetToken}`;
 
 		await transporter.sendMail({
 			from: EMAIL_USER,
