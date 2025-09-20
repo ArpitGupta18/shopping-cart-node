@@ -1,6 +1,7 @@
 import express from "express";
 import product from "../controllers/product.controller.js";
 import { requireAuth, requireRole } from "../middlewares/authMiddleware.js";
+import upload from "../middlewares/uploadMiddleware.js";
 
 const router = express.Router();
 
@@ -70,7 +71,7 @@ router.get("/:id", product.getProductById);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required: [name, price, stock]
@@ -83,13 +84,22 @@ router.get("/:id", product.getProductById);
  *                 type: number
  *               stock:
  *                 type: integer
+ *               image:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       201:
  *         description: Product created
  *       403:
  *         description: Forbidden (admin only)
  */
-router.post("/", requireAuth, requireRole("admin"), product.createProduct);
+router.post(
+	"/",
+	requireAuth,
+	requireRole("admin"),
+	upload.single("image"),
+	product.createProduct
+);
 
 /**
  * @swagger
@@ -109,9 +119,10 @@ router.post("/", requireAuth, requireRole("admin"), product.createProduct);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *          multipart/form-data:
  *           schema:
  *             type: object
+ *             required: [name, price, stock]
  *             properties:
  *               name:
  *                 type: string
@@ -121,13 +132,22 @@ router.post("/", requireAuth, requireRole("admin"), product.createProduct);
  *                 type: number
  *               stock:
  *                 type: integer
+ *               image:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       200:
  *         description: Product updated
  *       404:
  *         description: Product not found
  */
-router.put("/:id", requireAuth, requireRole("admin"), product.updateProduct);
+router.put(
+	"/:id",
+	requireAuth,
+	requireRole("admin"),
+	upload.single("image"),
+	product.updateProduct
+);
 
 /**
  * @swagger

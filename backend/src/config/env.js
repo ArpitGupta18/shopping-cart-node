@@ -11,3 +11,4 @@ export const JWT_SECRET = process.env.JWT_SECRET;
 export const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 export const EMAIL_USER = process.env.EMAIL_USER;
 export const EMAIL_PASS = process.env.EMAIL_PASS;
+export const UPLOAD_DIR = process.env.UPLOAD_DIR || "src/uploads";

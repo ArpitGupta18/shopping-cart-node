@@ -52,8 +52,14 @@ const createProduct = async (req, res) => {
 	try {
 		const { name, description, price, stock } = req.body;
 
-		if (!name || !description || !price || !stock) {
-			return res.status(400).json({ error: "All fields are required" });
+		const image = req.file
+			? `/uploads/${req.file.filename}`
+			: "/uploads/default.png";
+
+		if (!name || !price || !stock) {
+			return res
+				.status(400)
+				.json({ error: "Name, price and stock fields are required" });
 		}
 
 		if (price < 0) {
@@ -80,6 +86,7 @@ const createProduct = async (req, res) => {
 			description,
 			price,
 			stock,
+			image,
 		});
 		res.status(201).json({
 			message: "Product added successfully",
@@ -110,8 +117,14 @@ const updateProduct = async (req, res) => {
 		const { id } = req.params;
 		const { name, description, price, stock } = req.body;
 
-		if (!name || !description || !price || !stock) {
-			return res.status(400).json({ error: "All fields are required" });
+		const image = req.file
+			? `/uploads/${req.file.filename}`
+			: product.image;
+
+		if (!name || !price || !stock) {
+			return res
+				.status(400)
+				.json({ error: "Name, price and stock fields are required" });
 		}
 
 		if (price < 0) {
@@ -127,7 +140,13 @@ const updateProduct = async (req, res) => {
 			return res.status(404).json({ error: "Product not found" });
 		}
 
-		await product.update({ name, description, price, stock });
+		await product.update({
+			name,
+			description,
+			price,
+			stock,
+			...(image && { image }),
+		});
 		res.json({ message: "Product updated successfully", product });
 	} catch (error) {
 		res.status(500).json({ error: error.message });
