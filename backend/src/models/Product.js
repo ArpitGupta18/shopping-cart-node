@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/db.js";
+import Category from "./Category.js";
 
 const Product = sequelize.define("Product", {
 	id: {
@@ -27,5 +28,11 @@ const Product = sequelize.define("Product", {
 		allowNull: true,
 	},
 });
+
+Product.belongsTo(Category, {
+	foreignKey: { name: "categoryId", allowNull: true },
+	onDelete: "SET NULL",
+});
+Category.hasMany(Product, { foreignKey: "categoryId" });
 
 export default Product;

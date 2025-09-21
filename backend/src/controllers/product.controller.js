@@ -1,5 +1,6 @@
 import sequelize from "../config/db.js";
 import Product from "../models/Product.js";
+import Category from "../models/Category.js";
 import { Op } from "sequelize";
 
 const getProducts = async (req, res) => {
@@ -28,6 +29,12 @@ const getProducts = async (req, res) => {
 			limit,
 			offset,
 			order: [["createdAt", "DESC"]],
+			include: [
+				{
+					model: Category,
+					attributes: ["id", "name"],
+				},
+			],
 		});
 
 		if (products.length === 0) {
@@ -50,23 +57,26 @@ const getProducts = async (req, res) => {
 
 const createProduct = async (req, res) => {
 	try {
-		const { name, description, price, stock } = req.body;
+		const { name, description, price, stock, categoryId } = req.body;
+
+		const numPrice = parseFloat(price);
+		const numStock = parseInt(stock);
 
 		const image = req.file
 			? `/uploads/${req.file.filename}`
 			: "/uploads/default.png";
 
-		if (!name || !price || !stock) {
-			return res
-				.status(400)
-				.json({ error: "Name, price and stock fields are required" });
+		if (!name || isNaN(numPrice) || isNaN(numStock)) {
+			return res.status(400).json({
+				error: "Name, price and stock fields are required",
+			});
 		}
 
-		if (price < 0) {
+		if (numPrice < 0) {
 			return res.status(400).json({ error: "Price cannot be negative" });
 		}
 
-		if (stock < 0) {
+		if (numStock < 0) {
 			return res.status(400).json({ error: "Stock cannot be negative" });
 		}
 
@@ -81,13 +91,24 @@ const createProduct = async (req, res) => {
 			return res.status(400).json({ error: "Product already exists" });
 		}
 
+		let categoryIdValue = null;
+		if (categoryId && categoryId.trim() !== "") {
+			const category = await Category.findByPk(categoryId);
+			if (!category) {
+				return res.status(400).json({ error: "Invalid categoryId" });
+			}
+			categoryIdValue = categoryId;
+		}
+
 		const product = await Product.create({
 			name,
 			description,
-			price,
-			stock,
+			price: numPrice,
+			stock: numStock,
 			image,
+			categoryId: categoryIdValue,
 		});
+
 		res.status(201).json({
 			message: "Product added successfully",
 			product,
@@ -100,7 +121,14 @@ const createProduct = async (req, res) => {
 const getProductById = async (req, res) => {
 	try {
 		const { id } = req.params;
-		const product = await Product.findByPk(id);
+		const product = await Product.findByPk(id, {
+			include: [
+				{
+					model: Category,
+					attributes: ["id", "name"],
+				},
+			],
+		});
 
 		if (!product) {
 			return res.status(404).json({ error: "Product not found" });
@@ -115,23 +143,22 @@ const getProductById = async (req, res) => {
 const updateProduct = async (req, res) => {
 	try {
 		const { id } = req.params;
-		const { name, description, price, stock } = req.body;
+		const { name, description, price, stock, categoryId } = req.body;
 
-		const image = req.file
-			? `/uploads/${req.file.filename}`
-			: product.image;
+		const numPrice = parseFloat(price);
+		const numStock = parseInt(stock);
 
-		if (!name || !price || !stock) {
-			return res
-				.status(400)
-				.json({ error: "Name, price and stock fields are required" });
+		if (!name || isNaN(numPrice) || isNaN(numStock)) {
+			return res.status(400).json({
+				error: "Name, price and stock fields are required",
+			});
 		}
 
-		if (price < 0) {
+		if (numPrice < 0) {
 			return res.status(400).json({ error: "Price cannot be negative" });
 		}
 
-		if (stock < 0) {
+		if (numStock < 0) {
 			return res.status(400).json({ error: "Stock cannot be negative" });
 		}
 
@@ -140,13 +167,34 @@ const updateProduct = async (req, res) => {
 			return res.status(404).json({ error: "Product not found" });
 		}
 
+		let categoryIdValue = product.categoryId;
+		if (categoryId !== undefined) {
+			if (categoryId.trim() === "") {
+				categoryIdValue = null;
+			} else {
+				const category = await Category.findByPk(categoryId);
+				if (!category) {
+					return res
+						.status(400)
+						.json({ error: "Invalid categoryId" });
+				}
+				categoryIdValue = categoryId;
+			}
+		}
+
+		const image = req.file
+			? `/uploads/${req.file.filename}`
+			: product.image;
+
 		await product.update({
 			name,
 			description,
-			price,
-			stock,
-			...(image && { image }),
+			price: numPrice,
+			stock: numStock,
+			image,
+			categoryId: categoryIdValue,
 		});
+
 		res.json({ message: "Product updated successfully", product });
 	} catch (error) {
 		res.status(500).json({ error: error.message });

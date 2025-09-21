@@ -14,6 +14,7 @@ import authRoutes from "./routes/auth.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import orderRoutes from "./routes/order.routes.js";
 import seedRoutes from "./routes/seed.routes.js";
+import categoryRoutes from "./routes/category.routes.js";
 
 const app = express();
 
@@ -60,6 +61,7 @@ app.use("/", healthRoutes);
 app.use("/auth", authRoutes);
 app.use("/products", productRoutes);
 app.use("/orders", orderRoutes);
+app.use("/categories", categoryRoutes);
 app.use("/seed", seedRoutes);
 app.use(
 	"/uploads",

@@ -87,6 +87,9 @@ router.get("/:id", product.getProductById);
  *               image:
  *                 type: string
  *                 format: binary
+ *               categoryId:
+ *                 type: string
+ *                 format: uuid
  *     responses:
  *       201:
  *         description: Product created
@@ -135,6 +138,9 @@ router.post(
  *               image:
  *                 type: string
  *                 format: binary
+ *               categoryId:
+ *                 type: string
+ *                 format: uuid
  *     responses:
  *       200:
  *         description: Product updated
