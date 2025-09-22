@@ -19,27 +19,13 @@ const router = express.Router();
  *    tags: [Orders]
  *    security:
  *     - bearerAuth: []
- *    requestBody:
- *      required: true
- *      content:
- *        application/json:
- *          schema:
- *            type: object
- *            required: [items]
- *            properties:
- *              items:
- *                type: array
- *                items:
- *                  type: object
- *                  required: [productId, quantity]
- *                  properties:
- *                    productId:
- *                      type: string
- *                    quantity:
- *                      type: integer
  *    responses:
  *      201:
  *        description: Order placed successfully
+ *      400:
+ *        description: Cart is empty or insufficient stock
+ *      403:
+ *        description: Forbidden (user only)
  */
 router.post("/", requireAuth, requireRole("user"), order.placeOrder);
 

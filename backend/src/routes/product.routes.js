@@ -11,8 +11,8 @@ const router = express.Router();
  *   name: Products
  *   description: Product management endpoints
  */
+
 /**
- 
  * @swagger
  * /products:
  *   get:
@@ -23,14 +23,45 @@ const router = express.Router();
  *         name: page
  *         schema:
  *           type: integer
+ *           example: 1
  *       - in: query
  *         name: limit
  *         schema:
  *           type: integer
+ *           example: 8
  *       - in: query
  *         name: search
  *         schema:
  *           type: string
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: categories
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: minPrice
+ *         schema:
+ *           type: number
+ *       - in: query
+ *         name: maxPrice
+ *         schema:
+ *           type: number
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [createdAt, price, name]
+ *           default: createdAt
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum: [ASC, DESC]
+ *           default: DESC
  *     responses:
  *       200:
  *         description: List of products

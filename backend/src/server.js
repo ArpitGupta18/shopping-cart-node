@@ -4,6 +4,9 @@ import User from "./models/User.js";
 import Product from "./models/Product.js";
 import Order from "./models/Order.js";
 import OrderItem from "./models/OrderItem.js";
+import Cart from "./models/Cart.js";
+import CartItem from "./models/CartItem.js";
+import Category from "./models/Category.js";
 import { PORT } from "./config/env.js";
 
 sequelize

@@ -5,30 +5,68 @@ import { Op } from "sequelize";
 
 const getProducts = async (req, res) => {
 	try {
-		let { page = 1, limit = 6, search = "" } = req.query;
+		let {
+			page = 1,
+			limit = 8,
+			search = "",
+			category,
+			categories,
+			minPrice,
+			maxPrice,
+			sortBy = "createdAt",
+			sortOrder = "DESC",
+		} = req.query;
+
 		page = parseInt(page);
 		limit = parseInt(limit);
 
 		const offset = (page - 1) * limit;
 
-		const whereClause = search
-			? {
-					[Op.or]: [
-						{
-							name: {
-								[Op.iLike]: `%${search}%`,
-							},
-						},
-					],
-			  }
-			: {};
+		const whereClause = {};
+		if (search) {
+			whereClause[Op.or] = [{ name: { [Op.iLike]: `%${search}%` } }];
+		}
 
-		// const products = await Product.findAll();
+		if (category) {
+			if (category === "none") {
+				whereClause.categoryId = { [Op.is]: null };
+			} else {
+				whereClause.categoryId = category;
+			}
+		}
+
+		if (categories) {
+			const ids = categories.split(",").map((id) => id.trim());
+
+			if (ids.includes("none")) {
+				whereClause.categoryId = {
+					[Op.or]: [
+						{ [Op.in]: ids.filter((id) => id !== "none") },
+						{ [Op.is]: null },
+					],
+				};
+			} else {
+				whereClause.categoryId = { [Op.in]: ids };
+			}
+		}
+
+		if (minPrice || maxPrice) {
+			whereClause.price = {};
+			if (minPrice) whereClause.price[Op.gte] = parseFloat(minPrice);
+			if (maxPrice) whereClause.price[Op.lte] = parseFloat(maxPrice);
+		}
+
+		const validSortFields = ["createdAt", "price", "name"];
+		if (!validSortFields.includes(sortBy)) {
+			sortBy = "createdAt";
+		}
+		sortOrder = sortOrder.toUpperCase() === "ASC" ? "ASC" : "DESC";
+
 		const { rows: products, count } = await Product.findAndCountAll({
 			where: whereClause,
 			limit,
 			offset,
-			order: [["createdAt", "DESC"]],
+			order: [[sortBy, sortOrder]],
 			include: [
 				{
 					model: Category,

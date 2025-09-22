@@ -1,27 +1,28 @@
 import Order from "../models/Order.js";
 import OrderItem from "../models/OrderItem.js";
 import Product from "../models/Product.js";
+import Cart from "../models/Cart.js";
+import CartItem from "../models/CartItem.js";
 
 const placeOrder = async (req, res) => {
 	try {
-		const { items } = req.body;
 		const userId = req.user.id;
 
-		if (!items || items.length === 0) {
-			return res.status(400).json({ error: "No items provided" });
+		const cart = await Cart.findOne({
+			where: { userId },
+			include: [{ model: CartItem, include: [Product] }],
+		});
+
+		if (!cart || !cart.CartItems || cart.CartItems.length === 0) {
+			return res.status(400).json({ error: "Cart is empty" });
 		}
 
 		let totalPrice = 0;
 		const orderItems = [];
 
-		for (const item of items) {
+		for (const item of cart.CartItems) {
 			console.log(item);
-			const product = await Product.findByPk(item.productId);
-			if (!product) {
-				return res.status(404).json({
-					error: `Product with ID ${item.productId} not found`,
-				});
-			}
+			const product = item.Product;
 
 			if (product.stock < item.quantity) {
 				return res.status(400).json({
@@ -46,6 +47,8 @@ const placeOrder = async (req, res) => {
 			{ userId, totalPrice, OrderItems: orderItems },
 			{ include: [OrderItem] }
 		);
+
+		await cart.destroy();
 
 		res.status(201).json({ message: "Order placed successfully", order });
 	} catch (error) {
