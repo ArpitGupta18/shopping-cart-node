@@ -34,11 +34,6 @@ const router = express.Router();
  *         schema:
  *           type: string
  *       - in: query
- *         name: category
- *         schema:
- *           type: string
- *           format: uuid
- *       - in: query
  *         name: categories
  *         schema:
  *           type: string

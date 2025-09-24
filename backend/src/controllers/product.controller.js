@@ -7,9 +7,8 @@ const getProducts = async (req, res) => {
 	try {
 		let {
 			page = 1,
-			limit = 8,
+			limit = 10,
 			search = "",
-			category,
 			categories,
 			minPrice,
 			maxPrice,
@@ -25,14 +24,6 @@ const getProducts = async (req, res) => {
 		const whereClause = {};
 		if (search) {
 			whereClause[Op.or] = [{ name: { [Op.iLike]: `%${search}%` } }];
-		}
-
-		if (category) {
-			if (category === "none") {
-				whereClause.categoryId = { [Op.is]: null };
-			} else {
-				whereClause.categoryId = category;
-			}
 		}
 
 		if (categories) {
@@ -75,9 +66,12 @@ const getProducts = async (req, res) => {
 			],
 		});
 
-		if (products.length === 0) {
-			return res.status(404).json({ message: "No products found" });
-		}
+		// if (products.length === 0) {
+		// 	return res.status(404).json({ message: "No products found" });
+		// }
+
+		const maxProductPrice = await Product.max("price");
+
 		res.json({
 			message: "Products fetched successfully",
 			products,
@@ -87,6 +81,7 @@ const getProducts = async (req, res) => {
 				limit,
 				totalPages: Math.ceil(count / limit),
 			},
+			maxPrice: maxProductPrice,
 		});
 	} catch (error) {
 		res.status(500).json({ error: error.message });

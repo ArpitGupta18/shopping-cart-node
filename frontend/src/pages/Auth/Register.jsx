@@ -119,28 +119,39 @@ const Register = () => {
 				/>
 			</div>
 			{verifyModal && (
-				<div className="fixed inset-0 bg-black opacity-80 flex items-center justify-center">
-					<div className="bg-white p-6 rounded shadow-lg">
-						<h2 className="text-xl mb-4">Verify OTP</h2>
-						<p className="mb-4">
-							Please check your email for the OTP to verify your
-							account.
+				<div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+					<div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 relative">
+						<h2 className="text-2xl font-bold text-gray-800 mb-3 text-center">
+							Verify Your Account
+						</h2>
+						<p className="text-gray-600 text-sm text-center mb-6">
+							Enter the OTP sent to{" "}
+							<span className="font-medium">{email}</span>
 						</p>
-						<form onSubmit={handleOTP} className="flex flex-col">
+
+						<form
+							onSubmit={handleOTP}
+							className="flex flex-col gap-4"
+						>
 							<input
 								type="text"
-								placeholder="Enter OTP"
-								className="border rounded-md border-gray-500 p-2 mb-4"
+								placeholder="Enter 6-digit OTP"
+								className="border border-gray-300 rounded-lg px-4 py-3 text-center text-lg tracking-widest focus:ring-2 focus:ring-indigo-500 outline-none"
 								value={otp}
 								onChange={(e) => setOtp(e.target.value)}
 							/>
-							<button className="bg-blue-500 text-white px-4 py-2 rounded">
+
+							<button
+								type="submit"
+								className="bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-semibold transition"
+							>
 								Verify OTP
 							</button>
 						</form>
 					</div>
 				</div>
 			)}
+
 			{loading && (
 				<div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black/95 flex items-center justify-center z-50">
 					<div className="flex flex-col items-center gap-6">
