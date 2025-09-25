@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
-
+import { toast } from "react-toastify";
 const Login = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -24,10 +24,15 @@ const Login = () => {
 
 		try {
 			const data = await login({ email, password });
-			console.log(data);
-			console.log("here");
+
+			toast.success("Login successful!");
 			navigate("/");
 		} catch (error) {
+			if (error.status === 400) {
+				toast.error("Invalid credentials");
+			} else {
+				toast.error("Login failed. Please try again.");
+			}
 			console.error("Login failed:", error);
 		}
 	};

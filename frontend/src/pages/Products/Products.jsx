@@ -114,10 +114,8 @@ const Products = () => {
 		return (
 			<div className="flex items-center justify-center h-[calc(100vh-4rem)] bg-white">
 				<div className="flex flex-col items-center">
-					{/* Spinner */}
 					<div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
 
-					{/* Message */}
 					<p className="mt-4 text-gray-600 font-medium">
 						Loading products...
 					</p>
@@ -125,10 +123,22 @@ const Products = () => {
 			</div>
 		);
 	}
+
+	// if (loading) {
+	// 	return (
+	// 		<div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] text-gray-700">
+	// 			<div className="text-6xl animate-bounce">🛒</div>
+	// 			<p className="mt-3 text-lg font-semibold">
+	// 				Loading your products...
+	// 			</p>
+	// 		</div>
+	// 	);
+	// }
+
 	if (error) return <p>{error}</p>;
 
 	return (
-		<div className="my-10 px-20">
+		<div className="my-8 px-20">
 			<div className="flex gap-12">
 				<div className="w-64 pr-6 h-[730px] border-r space-y-8">
 					<CategoryFilter

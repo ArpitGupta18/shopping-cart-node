@@ -3,10 +3,17 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { useCart } from "../../hooks/useCart";
 import { ShoppingBagIcon, UserCircleIcon } from "@heroicons/react/24/outline";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
 	const { user, logout } = useAuth();
 	const { cartCount } = useCart();
+	const navigate = useNavigate();
+
+	const handleLogout = async () => {
+		await logout();
+		navigate("/login");
+	};
 
 	return (
 		<nav className="bg-gray-900 text-white px-20 py-3 flex justify-between items-center">
@@ -59,10 +66,10 @@ const Navbar = () => {
                 group-hover:translate-y-1 transition-all duration-200 transform p-2"
 							>
 								<div className="px-4 py-3 text-sm font-medium text-gray-700 bg-gray-50 rounded-lg border border-gray-200">
-									Hi, {user.name}
+									Hi, {user.name.split(" ")[0]}
 								</div>
 								<button
-									onClick={logout}
+									onClick={handleLogout}
 									className="w-full mt-2 bg-red-500 text-white py-2 rounded-md border-1 border-neutral-600 text-sm hover:bg-red-600 transition cursor-pointer"
 								>
 									Logout
@@ -88,10 +95,10 @@ const Navbar = () => {
                 group-hover:translate-y-1 transition-all duration-200 transform p-2"
 							>
 								<div className="px-4 py-3 text-sm font-medium text-gray-700 bg-gray-50 rounded-lg border border-gray-200">
-									Hi, {user.name}
+									Hi, {user.name.split(" ")[0]}
 								</div>
 								<button
-									onClick={logout}
+									onClick={handleLogout}
 									className="w-full mt-2 bg-red-500 text-white py-2 rounded-md border-1 border-neutral-600 text-sm hover:bg-red-600 transition cursor-pointer"
 								>
 									Logout

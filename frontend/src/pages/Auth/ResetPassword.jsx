@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import { toast } from "react-toastify";
 
 const ResetPassword = () => {
 	const [password, setPassword] = useState("");
@@ -14,19 +15,19 @@ const ResetPassword = () => {
 		e.preventDefault();
 
 		if (password !== confirmPassword) {
-			alert("Passwords do not match");
+			toast.info("Passwords do not match");
 			return;
 		}
 
 		try {
 			const data = await resetPassword(token, password);
-			alert(
+			toast.success(
 				"Password reset successful. Please log in with your new password."
 			);
 			navigate("/login");
 		} catch (error) {
 			console.error("Reset password failed:", error);
-			alert("Failed to reset password");
+			toast.error("Failed to reset password");
 		}
 	};
 

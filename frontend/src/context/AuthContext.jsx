@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import api from "../services/api.js";
+import { toast } from "react-toastify";
 
 export const AuthContext = createContext();
 
@@ -44,6 +45,7 @@ export const AuthProvider = ({ children }) => {
 		await api.post("/auth/logout");
 		localStorage.removeItem("accessToken");
 		setUser(null);
+		toast.success("Logged out successfully");
 	};
 
 	const verifyOTP = async (data) => {

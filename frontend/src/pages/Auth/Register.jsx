@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import { toast } from "react-toastify";
 
 const Register = () => {
 	const [name, setName] = useState("");
@@ -35,7 +36,7 @@ const Register = () => {
 		e.preventDefault();
 
 		if (otp === "") {
-			alert("Please enter the OTP");
+			toast.warning("Please enter the OTP");
 			return;
 		}
 
@@ -43,16 +44,16 @@ const Register = () => {
 			const data = await verifyOTP({ email, otp });
 			console.log("OTP:", data);
 			if (!!data.message) {
-				alert("OTP verified successfully");
+				toast.success("Registration Successful! Please login.");
 				setVerifyModal(false);
 				navigate("/login");
 			} else {
-				alert("OTP verification failed");
+				toast.error("OTP verification failed");
 				return;
 			}
 		} catch (error) {
 			console.error("OTP verification failed:", error);
-			alert("Invalid OTP");
+			toast.error("Invalid OTP");
 			return;
 		}
 	};

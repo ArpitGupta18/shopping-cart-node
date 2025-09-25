@@ -2,6 +2,7 @@ import React from "react";
 import cartService from "../../services/cartService";
 import { useAuth } from "../../hooks/useAuth";
 import { useCart } from "../../hooks/useCart";
+import { toast } from "react-toastify";
 
 const ProductGrid = ({ products, cartItems, setCartItems }) => {
 	const { user } = useAuth();
@@ -24,10 +25,10 @@ const ProductGrid = ({ products, cartItems, setCartItems }) => {
 				},
 			]);
 
-			alert(`${product.name} added to cart!`);
+			toast.success(`${product.name} added to cart!`);
 			await refreshCart();
 		} catch (error) {
-			alert("Failed to add to cart.");
+			toast.error("Failed to add to cart.");
 		}
 	};
 
