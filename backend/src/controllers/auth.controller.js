@@ -7,7 +7,7 @@ import { transporter } from "../config/email.js";
 
 const generateAccessToken = (user) => {
 	return jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, {
-		expiresIn: "15m",
+		expiresIn: "60m",
 	});
 };
 

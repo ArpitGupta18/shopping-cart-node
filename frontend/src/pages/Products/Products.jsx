@@ -110,11 +110,23 @@ const Products = () => {
 		return Array.from({ length: end - start + 1 }, (_, i) => start + i);
 	};
 
-	if (loading) return <p>Loading...</p>;
+	if (loading) {
+		return (
+			<div className="flex items-center justify-center h-[calc(100vh-4rem)] bg-white">
+				<div className="flex flex-col items-center">
+					{/* Spinner */}
+					<div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+
+					{/* Message */}
+					<p className="mt-4 text-gray-600 font-medium">
+						Loading products...
+					</p>
+				</div>
+			</div>
+		);
+	}
 	if (error) return <p>{error}</p>;
 
-	console.log(products);
-	console.log("cartItems:", cartItems);
 	return (
 		<div className="my-10 px-20">
 			<div className="flex gap-12">

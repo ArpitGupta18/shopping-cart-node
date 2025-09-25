@@ -1,9 +1,11 @@
 import React from "react";
 import cartService from "../../services/cartService";
 import { useAuth } from "../../hooks/useAuth";
+import { useCart } from "../../hooks/useCart";
 
 const ProductGrid = ({ products, cartItems, setCartItems }) => {
 	const { user } = useAuth();
+	const { refreshCart } = useCart();
 
 	const addToCart = async (product) => {
 		if (!user) {
@@ -23,6 +25,7 @@ const ProductGrid = ({ products, cartItems, setCartItems }) => {
 			]);
 
 			alert(`${product.name} added to cart!`);
+			await refreshCart();
 		} catch (error) {
 			alert("Failed to add to cart.");
 		}
@@ -31,7 +34,20 @@ const ProductGrid = ({ products, cartItems, setCartItems }) => {
 	const isInCart = (productId) =>
 		cartItems.some((item) => item.productId === productId);
 
-	if (products.length === 0) return <p>No products found.</p>;
+	if (products.length === 0)
+		return (
+			<div className="flex flex-col items-center justify-center py-60 px-6 bg-white rounded-xl  border border-gray-200">
+				<div className="text-6xl mb-4">🛍️</div>
+
+				<h2 className="text-xl font-semibold text-gray-800 mb-2">
+					No products found
+				</h2>
+				<p className="text-gray-500 text-center max-w-md">
+					We couldn’t find any products matching your search or
+					filters. Try adjusting your filters or browse all products.
+				</p>
+			</div>
+		);
 
 	return (
 		<div>

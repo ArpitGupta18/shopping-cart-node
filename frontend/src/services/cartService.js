@@ -18,4 +18,37 @@ const getCart = async () => {
 	}
 };
 
-export default { addToCart, getCart };
+const updateCartItem = async (cartItemId, quantity) => {
+	try {
+		const res = await api.put(`/cart/${cartItemId}`, { quantity });
+		return res.data;
+	} catch (error) {
+		console.error("Failed to update cart item:", error);
+	}
+};
+
+const deleteCartItem = async (cartItemId) => {
+	try {
+		const res = await api.delete(`/cart/${cartItemId}`);
+		return res.data;
+	} catch (error) {
+		console.error("Failed to delete cart item:", error);
+	}
+};
+
+const clearCart = async () => {
+	try {
+		const res = await api.delete("/cart/clear");
+		return res.data;
+	} catch (error) {
+		console.error("Failed to clear cart:", error);
+	}
+};
+
+export default {
+	addToCart,
+	getCart,
+	updateCartItem,
+	deleteCartItem,
+	clearCart,
+};

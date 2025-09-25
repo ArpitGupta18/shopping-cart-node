@@ -73,6 +73,7 @@ const addToCart = async (req, res) => {
 		const updatedCart = await Cart.findOne({
 			where: { id: cart.id },
 			include: [{ model: CartItem, include: [Product] }],
+			order: [["createdAt", "ASC"]],
 		});
 
 		res.status(201).json({
