@@ -3,6 +3,7 @@ import { useCart } from "../../hooks/useCart";
 import cartService from "../../services/cartService";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import orderService from "../../services/orderService";
+import { toast } from "react-toastify";
 
 const Cart = () => {
 	const { cartItems, setCartItems } = useCart();
@@ -11,9 +12,9 @@ const Cart = () => {
 		try {
 			await orderService.placeOrder();
 			setCartItems([]);
-			alert("Order placed successfully!");
+			toast.success("Order placed successfully!");
 		} catch (error) {
-			alert("Failed to place order.");
+			toast.error("Failed to place order.");
 		}
 	};
 

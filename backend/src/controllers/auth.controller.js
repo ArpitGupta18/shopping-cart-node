@@ -2,7 +2,13 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
-import { JWT_SECRET, JWT_REFRESH_SECRET, EMAIL_USER } from "../config/env.js";
+import {
+	JWT_SECRET,
+	JWT_REFRESH_SECRET,
+	EMAIL_USER,
+	FRONTEND_URL,
+	NODE_ENV,
+} from "../config/env.js";
 import { transporter } from "../config/email.js";
 
 const generateAccessToken = (user) => {
@@ -99,7 +105,7 @@ const login = async (req, res) => {
 
 		res.cookie("refreshToken", refreshToken, {
 			httpOnly: true,
-			secure: false,
+			secure: NODE_ENV === "production",
 			sameSite: "lax",
 			maxAge: 7 * 24 * 60 * 60 * 1000,
 		});
@@ -111,7 +117,8 @@ const login = async (req, res) => {
 };
 
 const refreshToken = async (req, res) => {
-	const { refreshToken } = req.body;
+	const refreshToken = req.cookies.refreshToken;
+
 	if (!refreshToken)
 		return res.status(401).json({ error: "Refresh token required" });
 
@@ -223,7 +230,7 @@ const forgotPassword = async (req, res) => {
 
 		await user.save();
 
-		const resetUrl = `http://localhost:5173/auth/reset-password/${resetToken}`;
+		const resetUrl = `${FRONTEND_URL}/auth/reset-password/${resetToken}`;
 
 		await transporter.sendMail({
 			from: EMAIL_USER,

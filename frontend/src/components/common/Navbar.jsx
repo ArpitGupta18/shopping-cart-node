@@ -66,7 +66,7 @@ const Navbar = () => {
                 group-hover:translate-y-1 transition-all duration-200 transform p-2"
 							>
 								<div className="px-4 py-3 text-sm font-medium text-gray-700 bg-gray-50 rounded-lg border border-gray-200">
-									Hi, {user.name.split(" ")[0]}
+									Hi, {user.name}
 								</div>
 								<button
 									onClick={handleLogout}
@@ -95,7 +95,7 @@ const Navbar = () => {
                 group-hover:translate-y-1 transition-all duration-200 transform p-2"
 							>
 								<div className="px-4 py-3 text-sm font-medium text-gray-700 bg-gray-50 rounded-lg border border-gray-200">
-									Hi, {user.name.split(" ")[0]}
+									Hi, {user.name}
 								</div>
 								<button
 									onClick={handleLogout}

@@ -1,15 +1,63 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
+import { FaGoogle } from "react-icons/fa";
+
 const Login = () => {
+	const location = useLocation();
+
+	const [toastShown, setToastShown] = useState(false);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [forgotEmail, setForgotEmail] = useState("");
 	const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] =
 		useState(false);
-	const { login, forgetPassword } = useAuth();
+	const { login, forgetPassword, refreshToken } = useAuth();
 	const navigate = useNavigate();
+
+	console.log("Location:", location);
+	useEffect(() => {
+		const handleAuth = async () => {
+			const queryParams = new URLSearchParams(location.search);
+			const error = queryParams.get("error");
+			const success = queryParams.get("success");
+
+			if ((error || success) && !toastShown) {
+				setToastShown(true);
+
+				if (error) {
+					if (error === "already_registered") {
+						toast.error(
+							"This email is already registered. Please login with password."
+						);
+					} else if (error === "oauth_failed") {
+						toast.error("Google login failed. Please try again.");
+					}
+					window.history.replaceState({}, document.title, "/login");
+				}
+
+				if (success) {
+					try {
+						const accessToken = await refreshToken();
+						console.log("accessToken:", accessToken);
+						if (accessToken) {
+							toast.success("Logged in successfully via Google!");
+							navigate("/");
+						} else {
+							toast.error("Session expired. Please login again.");
+						}
+					} catch {
+						toast.error("Session expired. Please login again.");
+					} finally {
+						window.history.replaceState({}, document.title, "/");
+					}
+				}
+			}
+		};
+
+		handleAuth();
+	}, [location.search, toastShown]);
 
 	const handleForgotPassword = async (e) => {
 		e.preventDefault();
@@ -87,6 +135,25 @@ const Login = () => {
 						>
 							Create an account
 						</Link>
+					</div>
+
+					<div className="mt-8 flex items-center">
+						<div className="flex-grow border-t border-gray-300"></div>
+						<span className="mx-4 text-gray-500 text-sm">
+							Or login with
+						</span>
+						<div className="flex-grow border-t border-gray-300"></div>
+					</div>
+
+					<div className="mt-6 flex justify-center gap-4">
+						<a
+							href={`${
+								import.meta.env.VITE_BASE_URL
+							}/auth/google`}
+							className="flex items-center justify-center w-12 h-12 rounded-full transition cursor-pointer border-1 text-indigo-600 hover:text-white border-gray-300 hover:bg-indigo-600 "
+						>
+							<FaGoogle className="h-6 w-6 " />
+						</a>
 					</div>
 				</div>
 			</div>

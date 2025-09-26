@@ -6,6 +6,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState(null);
+	const [updateLogin, setUpdateLogin] = useState(false);
 
 	useEffect(() => {
 		const fetchUser = async () => {
@@ -24,7 +25,7 @@ export const AuthProvider = ({ children }) => {
 		};
 
 		fetchUser();
-	}, []);
+	}, [updateLogin]);
 
 	const login = async (credentials) => {
 		const res = await api.post("/auth/login", credentials);
@@ -65,6 +66,23 @@ export const AuthProvider = ({ children }) => {
 		return res.data;
 	};
 
+	const refreshToken = async () => {
+		try {
+			const res = await api.post("/auth/refresh");
+			localStorage.setItem("accessToken", res.data.accessToken);
+
+			// const me = await api.get("/me");
+			setUpdateLogin((prev) => !prev);
+
+			// setUser(me.data.user);
+			return res.data.accessToken;
+		} catch (error) {
+			console.error("Token refresh failed:", error);
+			logout();
+			throw error;
+		}
+	};
+
 	return (
 		<AuthContext.Provider
 			value={{
@@ -75,6 +93,7 @@ export const AuthProvider = ({ children }) => {
 				verifyOTP,
 				forgetPassword,
 				resetPassword,
+				refreshToken,
 			}}
 		>
 			{children}

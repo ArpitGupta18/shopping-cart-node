@@ -10,7 +10,7 @@ const ProductGrid = ({ products, cartItems, setCartItems }) => {
 
 	const addToCart = async (product) => {
 		if (!user) {
-			alert("Please log in to add items to your cart.");
+			toast.info("Please log in to add items to your cart.");
 			return;
 		}
 		try {

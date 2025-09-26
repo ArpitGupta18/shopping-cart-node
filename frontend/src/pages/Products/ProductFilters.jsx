@@ -1,5 +1,4 @@
 import React from "react";
-import { Range } from "react-range";
 
 const ProductFilters = ({
 	search,

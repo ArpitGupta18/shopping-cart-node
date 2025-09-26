@@ -8,6 +8,8 @@ import cookieParser from "cookie-parser";
 import path from "path";
 import serveIndex from "serve-index";
 import { UPLOAD_DIR } from "./config/env.js";
+import session from "express-session";
+import passport from "passport";
 
 import healthRoutes from "./routes/health.routes.js";
 import authRoutes from "./routes/auth.routes.js";
@@ -29,6 +31,9 @@ app.use(
 app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(express.json());
+app.use(session({ secret: "secret", resave: false, saveUninitialized: true }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 const swaggerOptions = {
 	definition: {

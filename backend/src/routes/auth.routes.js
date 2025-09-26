@@ -1,5 +1,8 @@
 import express from "express";
 import auth from "../controllers/auth.controller.js";
+import passport from "../config/passport.js";
+import jwt from "jsonwebtoken";
+import { FRONTEND_URL, NODE_ENV } from "../config/env.js";
 
 const router = express.Router();
 
@@ -180,5 +183,88 @@ router.post("/forgot-password", auth.forgotPassword);
  *         description: Password reset successful
  */
 router.post("/reset-password/:resetToken", auth.resetPassword);
+
+/**
+ * @swagger
+ * /auth/google:
+ *  get:
+ *    summary: Login with Google
+ *    description: Redirects to Google OAuth login page.
+ *    tags: [Auth]
+ *    responses:
+ *      302:
+ *        description: Redirect to Google
+ */
+router.get(
+	"/google",
+	passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+/**
+ * @swagger
+ * /auth/google/callback:
+ *  get:
+ *    summary: Google OAuth callback
+ *    description: Handles the Google OAuth callback. Redirects the user back to frontend with session or JWT.
+ *    tags: [Auth]
+ *    parameters:
+ *      - in: query
+ *        name: code
+ *        schema:
+ *          type: string
+ *        description: Authorization code returned by Google
+ *    responses:
+ *      302:
+ *        description: Redirect to frontend after successful login
+ *      401:
+ *        description: Authentication failed
+ */
+router.get("/google/callback", (req, res, next) => {
+	passport.authenticate("google", async (err, user, info) => {
+		if (err || !user) {
+			// if login fails → redirect with message
+			const errorMessage = info?.message || "oauth_failed";
+			return res.redirect(
+				`${FRONTEND_URL}/login?error=${encodeURIComponent(
+					errorMessage
+				)}`
+			);
+		}
+
+		try {
+			// ** Generate tokens
+			// ! Is the access token generation necessary over here
+			const accessToken = jwt.sign(
+				{ id: user.id, role: user.role },
+				process.env.JWT_SECRET,
+				{ expiresIn: "60m" }
+			);
+
+			const refreshToken = jwt.sign(
+				{ id: user.id },
+				process.env.JWT_REFRESH_SECRET,
+				{ expiresIn: "7d" }
+			);
+
+			// ** Save refreshToken in DB
+			user.refreshToken = refreshToken;
+			await user.save();
+
+			// ** Set refreshToken as HTTP-only cookie
+			res.cookie("refreshToken", refreshToken, {
+				httpOnly: true,
+				secure: NODE_ENV === "production",
+				sameSite: "lax",
+				maxAge: 7 * 24 * 60 * 60 * 1000,
+			});
+
+			// ** Redirect to frontend with accessToken in URL
+			res.redirect(`${FRONTEND_URL}/login?success=google_login`);
+		} catch (error) {
+			console.error("Error issuing tokens:", error);
+			return res.redirect(`${FRONTEND_URL}/login?error=oauth_failed`);
+		}
+	})(req, res, next);
+});
 
 export default router;
