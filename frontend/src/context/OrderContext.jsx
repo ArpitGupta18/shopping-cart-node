@@ -13,7 +13,7 @@ export const OrderProvider = ({ children }) => {
 		};
 
 		fetchOrders();
-	}, []);
+	}, [orders]);
 
 	return (
 		<OrderContext.Provider value={{ orders, setOrders }}>
