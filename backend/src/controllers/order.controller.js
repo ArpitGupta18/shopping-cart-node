@@ -44,7 +44,13 @@ const placeOrder = async (req, res) => {
 		}
 
 		const order = await Order.create(
-			{ userId, totalPrice, OrderItems: orderItems },
+			{
+				userId,
+				totalPrice,
+				paymentStatus: "pending",
+				deliveryStatus: "pending",
+				OrderItems: orderItems,
+			},
 			{ include: [OrderItem] }
 		);
 

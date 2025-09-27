@@ -4,9 +4,11 @@ import cartService from "../../services/cartService";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import orderService from "../../services/orderService";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
-	const { cartItems, setCartItems } = useCart();
+	const { cartItems, setCartItems, cartTotal } = useCart();
+	const navigate = useNavigate();
 
 	const placeOrder = async () => {
 		try {
@@ -80,10 +82,10 @@ const Cart = () => {
 		);
 	}
 
-	const total = cartItems.reduce(
-		(sum, item) => sum + item.Product.price * item.quantity,
-		0
-	);
+	// const total = cartItems.reduce(
+	// 	(sum, item) => sum + item.Product.price * item.quantity,
+	// 	0
+	// );
 
 	return (
 		<div className="px-20 py-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
@@ -160,7 +162,7 @@ const Cart = () => {
 				<div className="flex justify-between text-base mb-4">
 					<span className="text-gray-600">Subtotal</span>
 					<span className="font-medium text-gray-800">
-						${total.toFixed(2)}
+						${cartTotal.toFixed(2)}
 					</span>
 				</div>
 
@@ -176,13 +178,22 @@ const Cart = () => {
 						Total
 					</span>
 					<span className="text-2xl font-bold text-indigo-600">
-						${total.toFixed(2)}
+						${cartTotal.toFixed(2)}
 					</span>
 				</div>
 
 				<div className="space-y-3">
-					<button
+					{/* <button
 						onClick={placeOrder}
+						className="w-full bg-indigo-600 text-white py-3 rounded-xl shadow-md hover:bg-indigo-700 transition cursor-pointer"
+					>
+						Place Order
+					</button> */}
+					<button
+						onClick={() => {
+							placeOrder();
+							navigate("/checkout", { state: { cartItems } });
+						}}
 						className="w-full bg-indigo-600 text-white py-3 rounded-xl shadow-md hover:bg-indigo-700 transition cursor-pointer"
 					>
 						Place Order

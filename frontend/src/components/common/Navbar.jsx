@@ -1,4 +1,4 @@
-import React, { use } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { useCart } from "../../hooks/useCart";
@@ -46,6 +46,12 @@ const Navbar = () => {
 
 				{user?.role === "user" && (
 					<>
+						<Link
+							to="/orders"
+							className="hover:text-indigo-400 transition"
+						>
+							My Orders
+						</Link>
 						<Link to="/cart" className="relative group">
 							<ShoppingBagIcon className="h-6 w-6 text-white hover:text-indigo-400 transition" />
 							{cartCount > 0 && (

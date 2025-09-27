@@ -12,6 +12,7 @@ import PublicRoute from "./components/common/PublicRoute";
 import RestrictedRoute from "./components/common/RestrictedRoute";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import { ToastContainer } from "react-toastify";
+import Orders from "./pages/Checkout/Orders";
 
 const App = () => {
 	return (
@@ -47,6 +48,14 @@ const App = () => {
 						element={
 							<ProtectedRoute allowedRoles={["user"]}>
 								<Cart />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/orders"
+						element={
+							<ProtectedRoute allowedRoles={["user"]}>
+								<Orders />
 							</ProtectedRoute>
 						}
 					/>

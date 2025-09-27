@@ -34,9 +34,21 @@ export const CartProvider = ({ children }) => {
 		const data = await cartService.getCart();
 		setCartItems(data.cart?.CartItems || []);
 	};
+
+	const cartTotal = cartItems.reduce(
+		(sum, item) => sum + item.Product.price * item.quantity,
+		0
+	);
+
 	return (
 		<CartContext.Provider
-			value={{ cartItems, setCartItems, cartCount, refreshCart }}
+			value={{
+				cartItems,
+				setCartItems,
+				cartCount,
+				refreshCart,
+				cartTotal,
+			}}
 		>
 			{children}
 		</CartContext.Provider>

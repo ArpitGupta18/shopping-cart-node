@@ -9,6 +9,16 @@ const placeOrder = async () => {
 	}
 };
 
+const getUserOrder = async () => {
+	try {
+		const res = await api.get("/orders");
+		return res.data.orders;
+	} catch (error) {
+		console.error("Failed to fetch user orders:", error);
+	}
+};
+
 export default {
 	placeOrder,
+	getUserOrder,
 };
