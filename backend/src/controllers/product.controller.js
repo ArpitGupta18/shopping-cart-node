@@ -2,6 +2,7 @@ import sequelize from "../config/db.js";
 import Product from "../models/Product.js";
 import Category from "../models/Category.js";
 import { Op } from "sequelize";
+import { DEFAULT_PRODUCT_IMAGE } from "../config/env.js";
 
 const getProducts = async (req, res) => {
 	try {
@@ -95,9 +96,7 @@ const createProduct = async (req, res) => {
 		const numPrice = parseFloat(price);
 		const numStock = parseInt(stock);
 
-		const image = req.file
-			? `/uploads/${req.file.filename}`
-			: "/uploads/default.png";
+		const image = req.file ? req.file.path : DEFAULT_PRODUCT_IMAGE;
 
 		if (!name || isNaN(numPrice) || isNaN(numStock)) {
 			return res.status(400).json({
@@ -215,9 +214,7 @@ const updateProduct = async (req, res) => {
 			}
 		}
 
-		const image = req.file
-			? `/uploads/${req.file.filename}`
-			: product.image;
+		const image = req.file ? req.file.path : product.image;
 
 		await product.update({
 			name,

@@ -5,9 +5,6 @@ import morgan from "morgan";
 import swaggerUI from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
 import cookieParser from "cookie-parser";
-import path from "path";
-import serveIndex from "serve-index";
-import { UPLOAD_DIR } from "./config/env.js";
 import session from "express-session";
 import passport from "passport";
 
@@ -70,10 +67,5 @@ app.use("/orders", orderRoutes);
 app.use("/categories", categoryRoutes);
 app.use("/cart", cartRoutes);
 app.use("/seed", seedRoutes);
-app.use(
-	"/uploads",
-	express.static(path.join(process.cwd(), UPLOAD_DIR)),
-	serveIndex(UPLOAD_DIR, { icons: true })
-);
 
 export default app;

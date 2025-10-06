@@ -97,18 +97,18 @@ const Products = () => {
 		return () => clearTimeout(timeout);
 	}, [page, search, selectedCategories, priceRange, sortBy, sortOrder]);
 
-	const getPageNumbers = () => {
-		if (!pagination) return [];
+	// const getPageNumbers = () => {
+	// 	if (!pagination) return [];
 
-		let start = Math.max(page - 1, 1);
-		let end = Math.min(start + 2, pagination.totalPages);
+	// 	let start = Math.max(page - 1, 1);
+	// 	let end = Math.min(start + 2, pagination.totalPages);
 
-		if (end - start < 2) {
-			start = Math.max(end - 2, 1);
-		}
+	// 	if (end - start < 2) {
+	// 		start = Math.max(end - 2, 1);
+	// 	}
 
-		return Array.from({ length: end - start + 1 }, (_, i) => start + i);
-	};
+	// 	return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+	// };
 
 	if (loading) {
 		return (
