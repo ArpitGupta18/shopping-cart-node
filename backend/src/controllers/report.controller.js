@@ -1,0 +1,126 @@
+import sequelize from "../config/db.js";
+import Order from "../models/Order.js";
+import OrderItem from "../models/OrderItem.js";
+import Product from "../models/Product.js";
+import { Op } from "sequelize";
+
+const getDayWiseReport = async (req, res) => {
+	try {
+		// optional query range
+		const { start, end } = req.query;
+		const whereClause = {};
+
+		if (start && end) {
+			const startDate = new Date(start);
+			const endDate = new Date(end);
+
+			endDate.setHours(23, 59, 59, 999);
+			whereClause.createdAt = {
+				[Op.between]: [startDate, endDate],
+			};
+		}
+
+		// group order items by date (based on their parent order date)
+		const report = await OrderItem.findAll({
+			attributes: [
+				[
+					sequelize.fn("DATE", sequelize.col("Order.createdAt")),
+					"date",
+				],
+				[sequelize.fn("SUM", sequelize.col("quantity")), "totalSold"],
+				[
+					sequelize.fn(
+						"SUM",
+						sequelize.literal('quantity * "OrderItem"."price"')
+						// sequelize.col("Order.totalPrice")
+					),
+					"totalRevenue",
+				],
+			],
+			include: [{ model: Order, attributes: [] }], // just for createdAt
+			where: whereClause,
+			group: ["date"],
+			order: [[sequelize.literal("date"), "ASC"]],
+			raw: true,
+		});
+
+		if (!report.length)
+			return res.status(404).json({ message: "No sales data found" });
+
+		res.status(200).json({ success: true, data: report });
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ message: "Failed to generate day-wise report" });
+	}
+};
+
+export const getSummaryReport = async (req, res) => {
+	try {
+		const { start, end } = req.query;
+		const whereClause = {};
+
+		if (start && end) {
+			const startDate = new Date(start);
+			const endDate = new Date(end);
+
+			endDate.setHours(23, 59, 59, 999);
+			whereClause.createdAt = {
+				[Op.between]: [startDate, endDate],
+			};
+		}
+
+		// ✅ Total sales and revenue combined
+		const totals = await OrderItem.findAll({
+			attributes: [
+				[sequelize.fn("SUM", sequelize.col("quantity")), "totalSold"],
+				[
+					sequelize.fn(
+						"SUM",
+						sequelize.literal(
+							'"OrderItem"."quantity" * "OrderItem"."price"'
+						)
+						// sequelize.col("Order.totalPrice")
+					),
+					"totalRevenue",
+				],
+			],
+			include: [{ model: Order, attributes: [], where: whereClause }],
+			raw: true,
+		});
+
+		const totalSold = parseInt(totals[0].totalSold) || 0;
+		const totalRevenue = parseFloat(totals[0].totalRevenue) || 0;
+
+		// ✅ Top 10 most sold products
+		const topSoldProducts = await OrderItem.findAll({
+			attributes: [
+				"productId",
+				[sequelize.fn("SUM", sequelize.col("quantity")), "totalSold"],
+			],
+			include: [
+				{
+					model: Product,
+					attributes: ["name", "price", "image"],
+				},
+				{ model: Order, attributes: [], where: whereClause },
+			],
+			group: ["productId", "Product.id"],
+			order: [[sequelize.literal('"totalSold"'), "DESC"]],
+			limit: 10,
+			raw: true,
+		});
+
+		res.status(200).json({
+			success: true,
+			data: {
+				totalRevenue: totalRevenue || 0,
+				totalSold: totalSold || 0,
+				topSoldProducts,
+			},
+		});
+	} catch (error) {
+		console.error("Error generating summary report:", error);
+		res.status(500).json({ message: "Failed to generate summary report" });
+	}
+};
+export default { getDayWiseReport, getSummaryReport };

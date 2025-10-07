@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./components/layout/Layout";
+import AdminLayout from "./components/layout/AdminLayout";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
 import Products from "./pages/Products/Products";
@@ -13,11 +14,14 @@ import RestrictedRoute from "./components/common/RestrictedRoute";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import { ToastContainer } from "react-toastify";
 import Orders from "./pages/Checkout/Orders";
-
+import { useAuth } from "./hooks/useAuth";
 const App = () => {
+	const { user } = useAuth();
+
+	const LayoutComponent = user?.role === "admin" ? AdminLayout : Layout;
 	return (
 		<Router>
-			<Layout>
+			<LayoutComponent>
 				<Routes>
 					<Route
 						path="/"
@@ -67,6 +71,12 @@ const App = () => {
 							</ProtectedRoute>
 						}
 					/>
+					{/* <Route
+						path="/admin"
+						element={<ProtectedRoute allowedRoles={["admin"]} />}
+					>
+						<Route index element={<Dashboard />} />
+					</Route> */}
 					<Route
 						path="/admin"
 						element={
@@ -92,7 +102,7 @@ const App = () => {
 					pauseOnHover
 					theme="colored"
 				/>
-			</Layout>
+			</LayoutComponent>
 		</Router>
 	);
 };

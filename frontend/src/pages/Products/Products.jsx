@@ -95,8 +95,15 @@ const Products = () => {
 		}, 100);
 
 		return () => clearTimeout(timeout);
-	}, [page, search, selectedCategories, priceRange, sortBy, sortOrder]);
+	}, [page, selectedCategories, priceRange, sortBy, sortOrder]);
 
+	useEffect(() => {
+		const timeout = setTimeout(() => {
+			fetchProducts();
+		}, 500);
+
+		return () => clearTimeout(timeout);
+	}, [search]);
 	// const getPageNumbers = () => {
 	// 	if (!pagination) return [];
 

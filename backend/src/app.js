@@ -15,6 +15,7 @@ import orderRoutes from "./routes/order.routes.js";
 import seedRoutes from "./routes/seed.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
 import cartRoutes from "./routes/cart.routes.js";
+import reportRoutes from "./routes/report.routes.js";
 
 const app = express();
 
@@ -66,6 +67,7 @@ app.use("/products", productRoutes);
 app.use("/orders", orderRoutes);
 app.use("/categories", categoryRoutes);
 app.use("/cart", cartRoutes);
+app.use("/report", reportRoutes);
 app.use("/seed", seedRoutes);
 
 export default app;

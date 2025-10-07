@@ -36,7 +36,7 @@ const placeOrder = async (req, res) => {
 			orderItems.push({
 				productId: product.id,
 				quantity: item.quantity,
-				price: itemPrice,
+				price: product.price,
 			});
 
 			product.stock -= item.quantity;
