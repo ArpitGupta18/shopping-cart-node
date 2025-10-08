@@ -14,7 +14,7 @@ const AdminLayout = ({ children }) => {
 		return "Admin Panel";
 	};
 	return (
-		<div className="h-screen flex bg-gray-300 overflow-hidden">
+		<div className="h-screen flex bg-gray-100 overflow-hidden">
 			<Sidebar
 				isCollapsed={isCollapsed}
 				setIsCollapsed={setIsCollapsed}
