@@ -15,6 +15,9 @@ import ResetPassword from "./pages/Auth/ResetPassword";
 import { ToastContainer } from "react-toastify";
 import Orders from "./pages/Checkout/Orders";
 import { useAuth } from "./hooks/useAuth";
+import AdminProducts from "./pages/Admin/AdminProducts";
+import AdminCategories from "./pages/Admin/AdminCategories";
+import AdminOrders from "./pages/Admin/AdminOrders";
 const App = () => {
 	const { user } = useAuth();
 
@@ -77,6 +80,46 @@ const App = () => {
 					>
 						<Route index element={<Dashboard />} />
 					</Route> */}
+					<Route
+						path="/admin"
+						element={
+							<ProtectedRoute allowedRoles={["admin"]}>
+								<Dashboard />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/admin/products"
+						element={
+							<ProtectedRoute allowedRoles={["admin"]}>
+								<AdminProducts />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/admin/categories"
+						element={
+							<ProtectedRoute allowedRoles={["admin"]}>
+								<AdminCategories />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/admin/orders"
+						element={
+							<ProtectedRoute allowedRoles={["admin"]}>
+								<AdminOrders />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/admin"
+						element={
+							<ProtectedRoute allowedRoles={["admin"]}>
+								<Dashboard />
+							</ProtectedRoute>
+						}
+					/>
 					<Route
 						path="/admin"
 						element={

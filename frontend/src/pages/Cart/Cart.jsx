@@ -1,5 +1,6 @@
 import React from "react";
 import { useCart } from "../../hooks/useCart";
+import { useOrder } from "../../hooks/useOrder";
 import cartService from "../../services/cartService";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import orderService from "../../services/orderService";
@@ -8,12 +9,14 @@ import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
 	const { cartItems, setCartItems, cartTotal } = useCart();
+	const { fetchOrders } = useOrder();
 	const navigate = useNavigate();
 
 	const placeOrder = async () => {
 		try {
 			await orderService.placeOrder();
 			setCartItems([]);
+			fetchOrders();
 			toast.success("Order placed successfully!");
 		} catch (error) {
 			toast.error("Failed to place order.");
