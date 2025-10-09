@@ -160,4 +160,27 @@ export const getSummaryReport = async (req, res) => {
 		res.status(500).json({ message: "Failed to generate summary report" });
 	}
 };
-export default { getDayWiseReport, getSummaryReport };
+
+const getTotalOrderDeliveryStatus = async (req, res) => {
+	try {
+		const [results] = await sequelize.query(`
+  SELECT "deliveryStatus", COUNT(*) AS "count"
+  FROM "Orders"
+  GROUP BY "deliveryStatus"
+`);
+		console.log(results);
+
+		res.status(200).json({ success: true, data: results });
+	} catch (error) {
+		console.error("Error fetching order status summary:", error);
+		res.status(500).json({
+			message: "Failed to fetch order status summary",
+		});
+	}
+};
+
+export default {
+	getDayWiseReport,
+	getSummaryReport,
+	getTotalOrderDeliveryStatus,
+};

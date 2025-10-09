@@ -10,4 +10,13 @@ const getSummaryReport = async (params = {}) => {
 	return res.data;
 };
 
-export default { getDayWiseReport, getSummaryReport };
+const getTotalOrderDeliveryStatus = async () => {
+	const res = await api.get("/report/delivery-status");
+	return res.data;
+};
+
+export default {
+	getDayWiseReport,
+	getSummaryReport,
+	getTotalOrderDeliveryStatus,
+};

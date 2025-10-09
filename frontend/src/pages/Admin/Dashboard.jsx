@@ -4,6 +4,9 @@ import {
 	Bar,
 	LineChart,
 	Line,
+	PieChart,
+	Pie,
+	Cell,
 	XAxis,
 	CartesianGrid,
 	YAxis,
@@ -14,6 +17,8 @@ import {
 import reportService from "../../services/reportService";
 import { DateRange } from "react-date-range";
 import { format, startOfMonth } from "date-fns";
+
+const COLORS = ["#8884d8", "#82ca9d", "#ff6961", "#f5b642", "#00C49F"];
 
 const Dashboard = () => {
 	const [dayWiseData, setDayWiseData] = useState([]);
@@ -26,6 +31,9 @@ const Dashboard = () => {
 		totalOrders: 0,
 		topSoldProducts: [],
 	});
+	const [totalOrderDeliveryStatus, setTotalOrderDeliveryStatus] = useState(
+		[]
+	);
 
 	const defaultRange = {
 		startDate: startOfMonth(new Date()),
@@ -51,9 +59,31 @@ const Dashboard = () => {
 		console.log("Summary Data:", response);
 		setSummaryData(response.data);
 	};
+
+	const fetchTotalOrderDeliveryStatus = async () => {
+		try {
+			const response = await reportService.getTotalOrderDeliveryStatus();
+			console.log("Total Order Delivery Status:", response);
+
+			const payload = response?.data?.data ?? response?.data ?? response;
+			const normalized = Array.isArray(payload)
+				? payload.map((row) => ({
+						deliveryStatus: row.deliveryStatus,
+						count: Number(row.count) || 0,
+				  }))
+				: [];
+
+			setTotalOrderDeliveryStatus(normalized);
+		} catch (err) {
+			console.error("Failed to fetch order delivery status:", err);
+			setTotalOrderDeliveryStatus([]);
+		}
+	};
+
 	useEffect(() => {
 		fetchReportData(defaultRange.startDate, defaultRange.endDate);
 		fetchSummaryData(defaultRange.startDate, defaultRange.endDate);
+		fetchTotalOrderDeliveryStatus();
 	}, []);
 
 	const handleFilter = async () => {
@@ -215,7 +245,7 @@ const Dashboard = () => {
 			</div>
 
 			{/* Top Sold Products Chart */}
-			<div className="mt-8">
+			<div className="mt-8 flex gap-8">
 				<div className="relative w-1/2 h-[400px] bg-white rounded-xl shadow-md border border-gray-200 pt-1 pb-3 px-3">
 					<h2 className="text-lg font-semibold text-gray-800 p-4">
 						Top Sold Products
@@ -316,6 +346,126 @@ const Dashboard = () => {
 							</p>
 						</div>
 					)}
+				</div>
+				<div className="relative w-1/2 h-[400px] bg-white rounded-xl shadow-md border border-gray-200 pt-1 pb-3 px-3">
+					<h2 className="text-lg font-semibold text-gray-800 p-4">
+						Payment Status
+					</h2>
+					{/* <ResponsiveContainer width="100%" height="90%">
+						<PieChart>
+							<Tooltip
+								formatter={(value, name) => [
+									value,
+									name === "deliveryStatus" ? "Status" : name,
+								]}
+							/>
+							<Legend verticalAlign="top" height={36} />
+							<Pie
+								data={totalOrderDeliveryStatus}
+								dataKey="count"
+								nameKey="deliveryStatus"
+								cx="50%"
+								cy="50%"
+								outerRadius={120}
+								innerRadius={60}
+								labelLine={false}
+								label={({
+									cx,
+									cy,
+									midAngle,
+									innerRadius,
+									outerRadius,
+									percent,
+									index,
+								}) => {
+									const RADIAN = Math.PI / 180;
+									const radius =
+										innerRadius +
+										(outerRadius - innerRadius) * 0.5;
+									const x =
+										cx +
+										radius * Math.cos(-midAngle * RADIAN);
+									const y =
+										cy +
+										radius * Math.sin(-midAngle * RADIAN);
+									const entry =
+										totalOrderDeliveryStatus[index];
+									return (
+										<text
+											x={x}
+											y={y}
+											fill="#fff"
+											textAnchor={
+												x > cx ? "start" : "end"
+											}
+											dominantBaseline="central"
+											style={{ fontSize: 12 }}
+										>
+											{entry
+												? `${
+														entry.deliveryStatus
+												  } (${Math.round(
+														percent * 100
+												  )}%)`
+												: ""}
+										</text>
+									);
+								}}
+							>
+								{totalOrderDeliveryStatus.map(
+									(entry, index) => (
+										<Cell
+											key={`cell-${index}`}
+											fill={COLORS[index % COLORS.length]}
+										/>
+									)
+								)}
+							</Pie>
+						</PieChart>
+					</ResponsiveContainer> */}
+
+					<ResponsiveContainer width="100%" height={300}>
+						<PieChart>
+							<Tooltip
+								formatter={(value, name) => [
+									value,
+									name === "count" ? "Orders" : name,
+								]}
+								contentStyle={{
+									backgroundColor: "white",
+									borderRadius: "8px",
+									border: "1px solid #ddd",
+									color: "#fff",
+								}}
+							/>
+							<Legend verticalAlign="bottom" height={36} />
+
+							<Pie
+								data={totalOrderDeliveryStatus}
+								dataKey="count"
+								nameKey="deliveryStatus"
+								cx="50%"
+								cy="50%"
+								innerRadius={70}
+								outerRadius={120}
+								// label={({ deliveryStatus, percent }) =>
+								// 	`${deliveryStatus}: ${(
+								// 		percent * 100
+								// 	).toFixed(0)}%`
+								// }
+								// labelLine={false}
+							>
+								{totalOrderDeliveryStatus.map(
+									(entry, index) => (
+										<Cell
+											key={`cell-${index}`}
+											fill={COLORS[index % COLORS.length]}
+										/>
+									)
+								)}
+							</Pie>
+						</PieChart>
+					</ResponsiveContainer>
 				</div>
 			</div>
 		</div>

@@ -155,4 +155,70 @@ router.get(
 	report.getSummaryReport
 );
 
+/**
+ * @swagger
+ * /report/delivery-status:
+ *   get:
+ *     summary: Get total number of orders by delivery status
+ *     description: |
+ *       Returns a count of orders grouped by their delivery status (e.g., Pending, Shipped, Delivered, Cancelled).
+ *       Optionally filters the results by a start and end date to limit the range of orders considered.
+ *       Accessible only by admin users.
+ *     tags: [Reports]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: start
+ *         schema:
+ *           type: string
+ *           format: date
+ *         required: false
+ *         description: Optional start date (YYYY-MM-DD) — include orders created on or after this date.
+ *         example: "2025-10-01"
+ *       - in: query
+ *         name: end
+ *         schema:
+ *           type: string
+ *           format: date
+ *         required: false
+ *         description: Optional end date (YYYY-MM-DD) — include orders created up to this date.
+ *         example: "2025-10-07"
+ *     responses:
+ *       200:
+ *         description: Successfully fetched order delivery status summary
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   description: List of order counts grouped by delivery status
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       deliveryStatus:
+ *                         type: string
+ *                         description: Delivery status of the order
+ *                         example: "Pending"
+ *                       count:
+ *                         type: integer
+ *                         description: Total number of orders with this status
+ *                         example: 8
+ *       400:
+ *         description: Invalid date range or query parameters
+ *       401:
+ *         description: Unauthorized — missing or invalid token
+ *       403:
+ *         description: Forbidden — only admin can access this route
+ *       500:
+ *         description: Server error — failed to fetch order status summary
+ */
+
+router.get("/delivery-status", report.getTotalOrderDeliveryStatus);
+
 export default router;
