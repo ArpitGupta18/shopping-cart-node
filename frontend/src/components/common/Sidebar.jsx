@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 import {
 	LayoutDashboard,
 	Package,
@@ -14,9 +15,11 @@ import {
 const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
 	const { logout } = useAuth();
 
+	const navigate = useNavigate();
+
 	const handleLogout = async () => {
 		await logout();
-		Navigate("/login");
+		navigate("/login");
 	};
 
 	const navItems = [

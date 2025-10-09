@@ -5,4 +5,9 @@ const getDayWiseReport = async (params = {}) => {
 	return res.data;
 };
 
-export default { getDayWiseReport };
+const getSummaryReport = async (params = {}) => {
+	const res = await api.get("/report/summary", { params });
+	return res.data;
+};
+
+export default { getDayWiseReport, getSummaryReport };

@@ -113,22 +113,6 @@ const App = () => {
 						}
 					/>
 					<Route
-						path="/admin"
-						element={
-							<ProtectedRoute allowedRoles={["admin"]}>
-								<Dashboard />
-							</ProtectedRoute>
-						}
-					/>
-					<Route
-						path="/admin"
-						element={
-							<ProtectedRoute allowedRoles={["admin"]}>
-								<Dashboard />
-							</ProtectedRoute>
-						}
-					/>
-					<Route
 						path="/auth/reset-password/:token"
 						element={<ResetPassword />}
 					/>

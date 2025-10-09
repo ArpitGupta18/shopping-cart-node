@@ -3,6 +3,8 @@ import Order from "../models/Order.js";
 import OrderItem from "../models/OrderItem.js";
 import Product from "../models/Product.js";
 import { Op } from "sequelize";
+import User from "../models/User.js";
+import Category from "../models/Category.js";
 
 const getDayWiseReport = async (req, res) => {
 	try {
@@ -37,15 +39,15 @@ const getDayWiseReport = async (req, res) => {
 					"totalRevenue",
 				],
 			],
-			include: [{ model: Order, attributes: [] }], // just for createdAt
-			where: whereClause,
+			include: [{ model: Order, attributes: [], where: whereClause }],
 			group: ["date"],
 			order: [[sequelize.literal("date"), "ASC"]],
 			raw: true,
 		});
 
 		if (!report.length)
-			return res.status(404).json({ message: "No sales data found" });
+			// return res.status(404).json({ message: "No sales data found" });
+			return res.json({ success: false, data: [] });
 
 		res.status(200).json({ success: true, data: report });
 	} catch (error) {
@@ -69,7 +71,7 @@ export const getSummaryReport = async (req, res) => {
 			};
 		}
 
-		// ✅ Total sales and revenue combined
+		// Total sales and revenue combined
 		const totals = await OrderItem.findAll({
 			attributes: [
 				[sequelize.fn("SUM", sequelize.col("quantity")), "totalSold"],
@@ -91,7 +93,7 @@ export const getSummaryReport = async (req, res) => {
 		const totalSold = parseInt(totals[0].totalSold) || 0;
 		const totalRevenue = parseFloat(totals[0].totalRevenue) || 0;
 
-		// ✅ Top 10 most sold products
+		// Top 10 most sold products
 		const topSoldProducts = await OrderItem.findAll({
 			attributes: [
 				"productId",
@@ -110,11 +112,46 @@ export const getSummaryReport = async (req, res) => {
 			raw: true,
 		});
 
+		// const totalUserRegistered = await User.findAll({
+		// 	attributes: [
+		// 		[sequelize.fn("COUNT", sequelize.col("id")), "totalUsers"],
+		// 	],
+		// 	where: whereClause,
+		// 	raw: true,
+		// });
+
+		// const totalProductsAdded = await Product.findAll({
+		// 	attributes: [
+		// 		[sequelize.fn("COUNT", sequelize.col("id")), "totalProducts"],
+		// 	],
+		// 	where: whereClause,
+		// 	raw: true,
+		// });
+
+		const totalCategories = await Category.findAll({
+			attributes: [
+				[sequelize.fn("COUNT", sequelize.col("id")), "totalCategories"],
+			],
+			raw: true,
+		});
+
+		const totalOrders = await Order.findAll({
+			attributes: [
+				[sequelize.fn("COUNT", sequelize.col("id")), "totalOrders"],
+			],
+			where: whereClause,
+			raw: true,
+		});
+
 		res.status(200).json({
 			success: true,
 			data: {
 				totalRevenue: totalRevenue || 0,
 				totalSold: totalSold || 0,
+				// totalUsersRegistered: totalUserRegistered[0].totalUsers || 0,
+				// totalProductsAdded: totalProductsAdded[0].totalProducts || 0,
+				totalCategories: totalCategories[0].totalCategories || 0,
+				totalOrders: totalOrders[0].totalOrders || 0,
 				topSoldProducts,
 			},
 		});
